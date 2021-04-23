@@ -514,7 +514,7 @@ public class Rede {
         }
     }
 
-    private static void toolSaveAplhaGen(){
+    protected static void toolSaveAplhaGen(){
         for(int i = 0; i < pesosEntradas.length; i++){
             for(int j = 0; j < pesosEntradas[i].length; j++){
                 pesosEntradasAlpha[i][j] = pesosEntradas[i][j];
