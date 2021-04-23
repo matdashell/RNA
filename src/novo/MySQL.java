@@ -1,5 +1,6 @@
 package novo;
 
+import javax.swing.*;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -19,10 +20,20 @@ public class MySQL extends Rede{
                 sqlException.printStackTrace();
             }
         }
+
+        try{
+            PreparedStatement tamanho = mysql.prepareStatement(
+                    String.format("SELECT COUNT(idPrimario) FROM %s WHERE idPrimario = 0;", nomeRede));
+        }catch (SQLException sqlException) {
+            JOptionPane.showMessageDialog(null,"Rede nao encontrada");
+            System.exit(0);
+        }
+
         toolIniciarVetores();
     }
 
     public static void saveDados(String nomeRede){
+        int contadorId = 0;
         boolean novo = false;
         if(mysql == null){
             try {
@@ -38,7 +49,15 @@ public class MySQL extends Rede{
         }catch (Exception e) {
             try {
                 cmd = mysql.prepareStatement(
-                        String.format("CREATE TABLE %s (idPrimario int, idSecundario int, valor double);", nomeRede)
+                        String.format("CREATE TABLE %s (id int, valor double);", nomeRede)
+                );
+                cmd.executeUpdate();
+                cmd = mysql.prepareStatement(
+                        String.format("CREATE TABLE %s_Data (entradas int, saidas int, colunas int, familias int);", nomeRede)
+                );
+                cmd.executeUpdate();
+                cmd = mysql.prepareStatement(
+                        String.format("INSERT INTO %s_Data VALUES(%d,%d,%d,%d);", nomeRede, numeroDeEntradas, numeroDeSaidas, numeroDeColunas, numeroDeFamilias)
                 );
                 cmd.executeUpdate();
                 novo = true;
@@ -46,89 +65,101 @@ public class MySQL extends Rede{
                 System.out.println(c.getMessage());
             }
         }
-        for(int i = 0; i < pesosEntradasAlpha.length; i++){
-            for (int j = 0; j < pesosEntradasAlpha[i].length; j++) {
+        for (Double[] doubles : pesosEntradasAlpha) {
+            for (Double aDouble : doubles) {
                 try {
-                    if(novo){throw new SQLException();}
+                    if (novo) {
+                        throw new SQLException();
+                    }
                     cmd = mysql.prepareStatement(
-                            String.format("UPDATE %s SET valor = %s WHERE idPrimario = 0 AND idSecundario = %d;"
-                                    ,nomeRede, new DecimalFormat("#,##0.0000000000000000000000").format(pesosEntradasAlpha[i][j]).replace(",","."),(i * pesosEntradasAlpha.length) + j));
+                            String.format("UPDATE %s SET valor = %s WHERE id = %d;"
+                                    , nomeRede, new DecimalFormat("#,##0.0000000000000000000000").format(aDouble).replace(",", "."), contadorId));
                     cmd.executeUpdate();
-                }catch (SQLException e) {
+                } catch (SQLException e) {
                     try {
                         cmd = mysql.prepareStatement(
-                                String.format("INSERT INTO %s VALUES(0, %d, %s);"
-                                        ,nomeRede, (i * pesosEntradasAlpha.length) + j, new DecimalFormat("#,##0.0000000000000000000000").format(pesosEntradasAlpha[i][j]).replace(",",".")
+                                String.format("INSERT INTO %s VALUES(%d, %s);"
+                                        , nomeRede, contadorId, new DecimalFormat("#,##0.0000000000000000000000").format(aDouble).replace(",", ".")
                                 ));
                         cmd.executeUpdate();
                     } catch (SQLException sqlException) {
                         sqlException.printStackTrace();
                     }
                 }
+                contadorId++;
             }
         }
-        for(int i = 0; i < pesosDeepAlpha.length; i++){
-            for (int j = 0; j < pesosDeepAlpha[i].length; j++) {
-                for(int k = 0; k < pesosDeepAlpha[i][j].length; k++) {
+        for (Double[][] doubles : pesosDeepAlpha) {
+            for (Double[] aDouble : doubles) {
+                for (Double value : aDouble) {
                     try {
-                        if(novo){throw new SQLException();}
+                        if (novo) {
+                            throw new SQLException();
+                        }
                         cmd = mysql.prepareStatement(
-                                String.format("UPDATE %s SET valor = %s WHERE idPrimario = 1 AND idSecundario = %d;"
-                                        , nomeRede, new DecimalFormat("#,##0.0000000000000000000000").format(pesosDeepAlpha[i][j][k]).replace(",","."), (i * pesosDeepAlpha.length + j * pesosDeepAlpha[i].length) + k));
+                                String.format("UPDATE %s SET valor = %s WHERE id = %d;"
+                                        , nomeRede, new DecimalFormat("#,##0.0000000000000000000000").format(value).replace(",", "."), contadorId));
                         cmd.executeUpdate();
                     } catch (SQLException e) {
                         try {
                             cmd = mysql.prepareStatement(
-                                    String.format("INSERT INTO %s VALUES(1, %d, %s);"
-                                            , nomeRede, (i * pesosDeepAlpha.length + j * pesosDeepAlpha[i].length) + k, new DecimalFormat("#,##0.0000000000000000000000").format(pesosDeepAlpha[i][j][k]).replace(",",".")
+                                    String.format("INSERT INTO %s VALUES(%d, %s);"
+                                            , nomeRede, contadorId, new DecimalFormat("#,##0.0000000000000000000000").format(value).replace(",", ".")
                                     ));
                             cmd.executeUpdate();
                         } catch (SQLException sqlException) {
                             sqlException.printStackTrace();
                         }
                     }
+                    contadorId++;
                 }
             }
         }
-        for(int i = 0; i < pesosSaidaAlpha.length; i++){
-            for (int j = 0; j < pesosSaidaAlpha[i].length; j++) {
+        for (Double[] doubles : pesosSaidaAlpha) {
+            for (Double aDouble : doubles) {
                 try {
-                    if(novo){throw new SQLException();}
+                    if (novo) {
+                        throw new SQLException();
+                    }
                     cmd = mysql.prepareStatement(
-                            String.format("UPDATE %s SET valor = %s WHERE idPrimario = 2 AND idSecundario = %d;"
-                                    ,nomeRede, new DecimalFormat("#,##0.0000000000000000000000").format(pesosSaidaAlpha[i][j]).replace(",","."),(i * pesosSaidaAlpha.length) + j));
+                            String.format("UPDATE %s SET valor = %s WHERE id = %d;"
+                                    , nomeRede, new DecimalFormat("#,##0.0000000000000000000000").format(aDouble).replace(",", "."), contadorId));
                     cmd.executeUpdate();
-                }catch (SQLException e) {
+                } catch (SQLException e) {
                     try {
                         cmd = mysql.prepareStatement(
-                                String.format("INSERT INTO %s VALUES(2, %d, %s);"
-                                        ,nomeRede, (i * pesosSaidaAlpha.length) + j, new DecimalFormat("#,##0.0000000000000000000000").format(pesosSaidaAlpha[i][j]).replace(",",".")
+                                String.format("INSERT INTO %s VALUES(%d, %s);"
+                                        , nomeRede, contadorId, new DecimalFormat("#,##0.0000000000000000000000").format(aDouble).replace(",", ".")
                                 ));
                         cmd.executeUpdate();
                     } catch (SQLException sqlException) {
                         sqlException.printStackTrace();
                     }
                 }
+                contadorId++;
             }
         }
-        for(int i = 0; i < biasAlpha.length; i++){
+        for (Double aDouble : biasAlpha) {
             try {
-                if(novo){throw new SQLException();}
+                if (novo) {
+                    throw new SQLException();
+                }
                 cmd = mysql.prepareStatement(
-                        String.format("UPDATE %s SET valor = %s WHERE idPrimario = 3 AND idSecundario = %d;"
-                                ,nomeRede, new DecimalFormat("#,##0.0000000000000000000000").format(bias[i]).replace(",","."), i));
+                        String.format("UPDATE %s SET valor = %s WHERE id = %d;"
+                                , nomeRede, new DecimalFormat("#,##0.0000000000000000000000").format(aDouble).replace(",", "."), contadorId));
                 cmd.executeUpdate();
-            }catch (SQLException e) {
+            } catch (SQLException e) {
                 try {
                     cmd = mysql.prepareStatement(
-                            String.format("INSERT INTO %s VALUES(3, %d, %s);"
-                                    ,nomeRede, i, new DecimalFormat("#,##0.0000000000000000000000").format(bias[i]).replace(",",".")
+                            String.format("INSERT INTO %s VALUES(%d, %s);"
+                                    , nomeRede, contadorId, new DecimalFormat("#,##0.0000000000000000000000").format(aDouble).replace(",", ".")
                             ));
                     cmd.executeUpdate();
                 } catch (SQLException sqlException) {
                     sqlException.printStackTrace();
                 }
             }
+            contadorId++;
         }
     }
 }
