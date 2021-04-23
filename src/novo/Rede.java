@@ -2,6 +2,7 @@ package novo;
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.sql.Connection;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.function.Function;
@@ -9,72 +10,73 @@ import java.util.function.Function;
 import static java.lang.Thread.sleep;
 
 public class Rede {
-    String nome;
-    Double[/*posição*/][/*valor*/]  valoresEntrada = null;
-    Double[/*posição*/][/*valor*/]  valoresSaida = null;
-    Double[/*x*/][/*pesos*/]        pesosEntradas = null;
-    Double[/*x*/][/*y*/][/*pesos*/] pesosDeep = null;
-    Double[/*x*/][/*pesos*/]        pesosSaida = null;
-    Double[/*pesos*/]               bias = null;
-    Double[/*x*/][/*y*/]            neuroniosDeep = null;
-    Double[/*x*/]                   neuroniosSaida = null;
-    Function<Double, Double>        funcaoAtivacaoDeep = null;
-    Function<Double, Double>        funcaoAtivacaoSaida = null;
-    Double                          margemDeErro = null;
-    int numeroDeEntradas;
-    int numeroDeSaidas;
-    int numeroDeColunas;
-    int numeroDeFamilias;
-    String nomeFuncaoDeep;
-    String nomeFuncaoSaida;
+    static String nome;
+    static Double[/*posição*/][/*valor*/]  valoresEntrada = null;
+    static Double[/*posição*/][/*valor*/]  valoresSaida = null;
+    static Double[/*x*/][/*pesos*/]        pesosEntradas = null;
+    static Double[/*x*/][/*y*/][/*pesos*/] pesosDeep = null;
+    static Double[/*x*/][/*pesos*/]        pesosSaida = null;
+    static Double[/*pesos*/]               bias = null;
+    static Double[/*x*/][/*y*/]            neuroniosDeep = null;
+    static Double[/*x*/]                   neuroniosSaida = null;
+    static Function<Double, Double>        funcaoAtivacaoDeep = null;
+    static Function<Double, Double>        funcaoAtivacaoSaida = null;
+    static Double                          margemDeErro = null;
+    static int numeroDeEntradas;
+    static int numeroDeSaidas;
+    static int numeroDeColunas;
+    static int numeroDeFamilias;
+    static String nomeFuncaoDeep;
+    static String nomeFuncaoSaida;
 
-    Double[/*x*/][/*pesos*/]        pesosEntradasAlpha = null;
-    Double[/*x*/][/*y*/][/*pesos*/] pesosDeepAlpha = null;
-    Double[/*x*/][/*pesos*/]        pesosSaidaAlpha = null;
-    Double[/*pesos*/]               biasAlpha = null;
-    Double                          margemDeErroAlpha = null;
+    static Double[/*x*/][/*pesos*/]        pesosEntradasAlpha = null;
+    static Double[/*x*/][/*y*/][/*pesos*/] pesosDeepAlpha = null;
+    static Double[/*x*/][/*pesos*/]        pesosSaidaAlpha = null;
+    static Double[/*pesos*/]               biasAlpha = null;
+    static Double                          margemDeErroAlpha = null;
 
-    Vector<Integer> vetorColunas = new Vector<>();
-    Vector<Integer> vetorFamilias = new Vector<>();
-    Vector<Integer> vetorEntradas = new Vector<>();
-    Vector<Integer> vetorSaidas = new Vector<>();
+    static Vector<Integer> vetorColunas = new Vector<>();
+    static Vector<Integer> vetorFamilias = new Vector<>();
+    static Vector<Integer> vetorEntradas = new Vector<>();
+    static Vector<Integer> vetorSaidas = new Vector<>();
 
-    double taxaAprendizagema = 0.1;
-    double margemAnterior = 0.0;
-    double margemErro = 0.01;
-    double temp0;
-    double temp1;
-    double ajusteLeve = 0.01;
-    double ajustePesado = 0.025;
-    String stringMargemAnterior;
-    String stringMargemPosterior;
+    static double taxaAprendizagema = 0.1;
+    static double margemAnterior = 0.0;
+    static double margemErro = 0.01;
+    static double temp0;
+    static double temp1;
+    static double ajusteLeve = 0.01;
+    static double ajustePesado = 0.025;
+    static String stringMargemAnterior;
+    static String stringMargemPosterior;
 
-    JFrame frame = null;
-    JButton info00 = new JButton("-");
-    JButton info01 = new JButton("-");
-    JButton info02 = new JButton("-");
-    JTextPane areaDeTexto = new JTextPane();
+    static JFrame frame = null;
+    static JButton info00 = new JButton("-");
+    static JButton info01 = new JButton("-");
+    static JButton info02 = new JButton("-");
+    static JTextPane areaDeTexto = new JTextPane();
 
-    boolean forcarRetorno = false;
-    boolean salvar = false;
+    static boolean forcarRetorno = false;
+    static boolean salvar = false;
+
+    static Connection mysql = null;
 
     public Rede(String nome){
-        this.nome = nome;
-        toolGetInfo();
-    }
-    public void loadDados(){
-        //metodo para carregar uma rede treinada
-        toolIniciarVetores();
-    }
-    public void saveDados(){
-        //metodo para salvar uma rede treinada
     }
 
-    public void setMargemErroMinima(double margem){
-        this.margemErro = margem;
+    public static void loadDados(String nomeRede){
+
     }
 
-    public void treinar(){
+    public static void saveDados(String nomeRede){
+        MySQL.saveDados(nomeRede);
+    }
+
+    public static void setMargemErroMinima(double margem){
+        margemErro = margem;
+    }
+
+    public static void treinar(){
         if(margemDeErroAlpha == null){
             toolGetMargemErro();
             margemDeErroAlpha = margemDeErro;
@@ -107,7 +109,7 @@ public class Rede {
             }
             if(salvar){
                 salvar = false;
-                saveDados();
+                saveDados(nome);
             }
             if(margemDeErro > margemDeErroAlpha * 10 && margemDeErroAlpha >= 10.0){
                 toolLoadAplhaGen();
@@ -133,7 +135,7 @@ public class Rede {
 
     }
 
-    public void getPartida(int testes){
+    public static void getPartida(int testes){
         toolGetMargemErro();
         taxaAprendizagema = 1.0;
         if(margemDeErroAlpha == null) {
@@ -168,7 +170,7 @@ public class Rede {
         areaDeTexto.setText("-");
     }
 
-    public void getFuncao(){
+    public static void getFuncao(){
         taxaAprendizagema = 1.0;
         double temp0 = 9999999999999.0;
         String temp1 = "";
@@ -176,7 +178,7 @@ public class Rede {
         List<String> funcoes = new ArrayList<>(Arrays.asList("none", "sigmoide", "relu", "leaky relu", "tanh", "bit"));
         for(String entrada : funcoes){
             for(String saida : funcoes){
-                setDados(numeroDeEntradas, numeroDeSaidas, numeroDeFamilias, numeroDeColunas, entrada, saida);
+                setDados(nome ,numeroDeEntradas, numeroDeSaidas, numeroDeFamilias, numeroDeColunas, entrada, saida);
                 margemDeErroAlpha = 9999999999999.0;
                 for(int i = 0; i < 10; i++){
                     toolGerarPesosAleatorios();
@@ -197,15 +199,15 @@ public class Rede {
         }
         areaDeTexto.setText("\n\nMelhor resultado: "+temp1+"-"+temp2+" - "+temp0);
         try{sleep(5000);}catch (Exception ignore){}
-        setDados(numeroDeEntradas, numeroDeSaidas, numeroDeFamilias, numeroDeColunas, temp1, temp2);
+        setDados(nome ,numeroDeEntradas, numeroDeSaidas, numeroDeFamilias, numeroDeColunas, temp1, temp2);
     }
 
-    public void setAlimentacao(Double[][] entradas, Double[][] saidas){
+    public static void setAlimentacao(Double[][] entradas, Double[][] saidas){
         valoresEntrada = entradas;
         valoresSaida = saidas;
     }
 
-    public void setDados(int entradas, int saidas, int familias, int colunas, String funcaoDeep, String funcaoSaida){
+    public static void setDados(String nomeRede ,int entradas, int saidas, int familias, int colunas, String funcaoDeep, String funcaoSaida){
         /*iniciar uma rede do zero*/
         /*
         * 1- setar informações basicas
@@ -213,12 +215,13 @@ public class Rede {
         * 3- inicializar os vetores
         * */
         //1
-        this.numeroDeEntradas = entradas;
-        this.numeroDeSaidas = saidas;
-        this.numeroDeColunas = colunas;
-        this.numeroDeFamilias = familias;
-        this.nomeFuncaoDeep = funcaoDeep;
-        this.nomeFuncaoSaida = funcaoSaida;
+        nome = nomeRede;
+        numeroDeEntradas = entradas;
+        numeroDeSaidas = saidas;
+        numeroDeColunas = colunas;
+        numeroDeFamilias = familias;
+        nomeFuncaoDeep = funcaoDeep;
+        nomeFuncaoSaida = funcaoSaida;
         //2
         pesosEntradas = new Double[numeroDeEntradas][numeroDeColunas];
         pesosDeep = new Double[numeroDeColunas][numeroDeFamilias-1][numeroDeColunas];
@@ -240,7 +243,7 @@ public class Rede {
         toolIniciarVetores();
     }
 
-    private void toolGetMargemErro() {
+    private static void toolGetMargemErro() {
         /*metodo para obter margem de erro(usado no treino)*/
         /*
         * 1- resetar os valores dos neuronios e margem em cada execução
@@ -280,7 +283,7 @@ public class Rede {
         }
     }
 
-    public Double[] getProcessamento(Double[] valor) {
+    public static Double[] getProcessamento(Double[] valor) {
         /*metodo para processar um valor(usando quando rede estiver treinada)*/
         /*
          * 2- resetar os valores dos neuronios e margem
@@ -321,7 +324,7 @@ public class Rede {
         return valor;
     }
 
-    private Function<Double, Double> toolGetFuncao(String nomeFuncaoDeep){
+    private static Function<Double, Double> toolGetFuncao(String nomeFuncaoDeep){
         /*metodo para as funções dos neuronios*/
         switch (nomeFuncaoDeep){
             case "none": return aDouble -> aDouble;
@@ -334,7 +337,7 @@ public class Rede {
         }
     }
 
-    private void toolReduzirMargem(){
+    private static void toolReduzirMargem(){
         double numeroMaxDeep = 0.0;
         double numeroMaxSaida = 0.0;
 
@@ -511,7 +514,7 @@ public class Rede {
         }
     }
 
-    private void toolSaveAplhaGen(){
+    private static void toolSaveAplhaGen(){
         for(int i = 0; i < pesosEntradas.length; i++){
             for(int j = 0; j < pesosEntradas[i].length; j++){
                 pesosEntradasAlpha[i][j] = pesosEntradas[i][j];
@@ -535,7 +538,7 @@ public class Rede {
         margemDeErroAlpha = margemDeErro;
     }
 
-    private void toolLoadAplhaGen(){
+    private static void toolLoadAplhaGen(){
         for(int i = 0; i < pesosEntradasAlpha.length; i++){
             for(int j = 0; j < pesosEntradasAlpha[i].length; j++){
                 pesosEntradas[i][j] = pesosEntradasAlpha[i][j];
@@ -559,7 +562,7 @@ public class Rede {
         margemDeErro = margemDeErroAlpha;
     }
 
-    private void toolGerarPesosAleatorios(){
+    private static void toolGerarPesosAleatorios(){
         double mult = 0, sub = 0;
 
         switch (nomeFuncaoDeep.toLowerCase()){
@@ -617,14 +620,14 @@ public class Rede {
         Arrays.fill(bias, 0.0);
     }
 
-    private void toolZerarNeuronios(){
+    private static void toolZerarNeuronios(){
         for (Double[] doubles : neuroniosDeep) {
             Arrays.fill(doubles, 0.0);
         }
         Arrays.fill(neuroniosSaida, 0.0);
     }
 
-    private void toolIniciarVetores(){
+    protected static void toolIniciarVetores(){
         for(int i = 0; i < numeroDeColunas; i++){
             vetorColunas.add(i);
         }
@@ -639,7 +642,7 @@ public class Rede {
         }
     }
 
-    private void toolVariarPesos(double peso){
+    private static void toolVariarPesos(double peso){
 
         double numeroMaxDeep = 0.0;
         double numeroMaxSaida = 0.0;
@@ -719,7 +722,7 @@ public class Rede {
         Arrays.fill(bias, 0.0);
     }
 
-    private void toolGetInfo(){
+    private static void toolGetInfo(){
         if(frame == null){
             frame = new JFrame("Informativo");
             frame.setLayout(null);
@@ -788,24 +791,24 @@ public class Rede {
             infoModMe.setText(new DecimalFormat("#,##0.000").format(ajusteLeve));
             infoModMa.setText(new DecimalFormat("#,##0.000").format(ajustePesado));
 
-            forcarRetorno.addActionListener(button -> this.forcarRetorno = true);
-            salvar.addActionListener(button -> this.salvar = true);
+            forcarRetorno.addActionListener(button -> Rede.forcarRetorno = true);
+            salvar.addActionListener(button -> Rede.salvar = true);
             menosModMe.addActionListener(button -> {
-                this.ajusteLeve -= 0.01;
+                ajusteLeve -= 0.01;
                 infoModMe.setText(new DecimalFormat("#,##0.000").format(ajusteLeve));
-                if(this.ajusteLeve <= 0.01){ajusteLeve = 0.0;}
+                if(ajusteLeve <= 0.01){ajusteLeve = 0.0;}
             });
             maisModMe.addActionListener(button -> {
-                this.ajusteLeve += 0.01;
+                ajusteLeve += 0.01;
                 infoModMe.setText(new DecimalFormat("#,##0.000").format(ajusteLeve));
             });
             menosModMa.addActionListener(button -> {
-                this.ajustePesado -= 0.025;
+                ajustePesado -= 0.025;
                 infoModMa.setText(new DecimalFormat("#,##0.000").format(ajustePesado));
-                if(this.ajustePesado <= 0.01){ajustePesado = 0.0;}
+                if(ajustePesado <= 0.01){ajustePesado = 0.0;}
             });
             maisModMa.addActionListener(button -> {
-                this.ajustePesado += 0.025;
+                ajustePesado += 0.025;
                 infoModMa.setText(new DecimalFormat("#,##0.000").format(ajustePesado));
             });
             anularPesoAleatorio.addActionListener(button -> {
