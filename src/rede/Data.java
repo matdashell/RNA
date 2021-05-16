@@ -54,4 +54,6 @@ public class Data {
     static boolean salvar = false;
 
     static Connection mysql = null;
+
+    static int contadorE = 0;
 }

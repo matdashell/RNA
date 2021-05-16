@@ -2,7 +2,7 @@ import rede.Rede;
 
 public class teste {
     public static void main(String[] args) {
-        Rede.setDados("multiplicacao" ,2,1,2,10,"leaky relu","leaky relu");
+        Rede.setDados("nomeRede" ,2,1,2,10,"leaky relu","leaky relu");
         Rede.init();
 
         int amostras = 100;
@@ -17,7 +17,7 @@ public class teste {
         }
 
         Rede.setAlimentacao(entradas, saidas);
-        Rede.getPartida(250);
+        Rede.getPartida(250, false);
         Rede.treinar();
 
         for(int i = 0; i < 100; i++){

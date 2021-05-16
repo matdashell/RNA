@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 public class Tools extends Data{
 
-    static void toolVariarPesos(){
+    static void variarPesos(){
 
         for(int i = 0; i < pesosEntradas.length; i++){
             for (int j = 0; j < pesosEntradas[i].length; j++) {

@@ -44,6 +44,7 @@ public class Rede extends Data{
                 temp1 = margemDeErro;
                 if(margemDeErro < margemDeErroAlpha){
                     Tools.saveAlphaGen();
+                    contadorE = 0;
                 }
                 if(temp0 == temp1){
                     break;
@@ -64,22 +65,32 @@ public class Rede extends Data{
             if(stringMargemAnterior.equals(stringMargemPosterior)) {
                 taxaAprendizagema /= 10;
             }
-            if(taxaAprendizagema <= 0.00000000001 || margemDeErro > margemDeErroAlpha * 2.0){
+            if(taxaAprendizagema <= 0.000001 || margemDeErro > margemDeErroAlpha * 2.0){
                 taxaAprendizagema = 0.1;
                 Tools.loadAlphaGen();
-                Tools.toolVariarPesos();
+                Tools.variarPesos();
+                contadorE++;
+                if(contadorE > 10){
+                    getPartida(50,true);
+                }
             }
         }
     }
 
-    public static void getPartida(int testes){
+    public static void getPartida(int testes, boolean refinarRede){
         Tools.getMargemErro();
         taxaAprendizagema = 1.0;
         if(margemDeErroAlpha == null) {
             margemDeErroAlpha = margemDeErro*100;
         }
         for(int i = 0; i < testes; i++){
-            Tools.gerarPesosAleatorios();
+
+            if(refinarRede){
+                Tools.loadAlphaGen();
+                Tools.variarPesos();
+            }else{
+                Tools.gerarPesosAleatorios();
+            }
 
             for(int j = 0; j < 20; j++){
                 temp0 = margemDeErro;
@@ -88,11 +99,10 @@ public class Rede extends Data{
                 if(temp0 == temp1 && i > 0){
                     break;
                 }
-                Tools.getMargemErro();
             }
             if(margemDeErro < margemDeErroAlpha){
-                Tools.getMargemErro();
                 Tools.saveAlphaGen();
+                contadorE = 0;
             }
 
             if(margemDeErroAlpha <= margemErro){
