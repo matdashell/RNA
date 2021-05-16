@@ -1,4 +1,4 @@
-package novo;
+package rede;
 
 import javax.swing.*;
 import java.sql.DriverManager;
@@ -75,8 +75,8 @@ public class MySQL extends Rede{
             JOptionPane.showMessageDialog(null,"Rede nao encontrada");
             System.exit(0);
         }
-        toolIniciarVetores();
-        toolSaveAplhaGen();
+        Tools.iniciarVetores();
+        Tools.saveAlphaGen();
     }
 
     public static void saveDados(String nomeRede){
@@ -100,11 +100,11 @@ public class MySQL extends Rede{
                 );
                 cmd.executeUpdate();
                 cmd = mysql.prepareStatement(
-                        String.format("CREATE TABLE %s_Data (entradas int, saidas int, colunas int, familias int, funcaoEntrada varchar(15), funcaoSaida varchar(15));", nomeRede)
+                        String.format("CREATE TABLE %s_Data (entradas int, saidas int, familias int, colunas int, funcaoEntrada varchar(15), funcaoSaida varchar(15));", nomeRede)
                 );
                 cmd.executeUpdate();
                 cmd = mysql.prepareStatement(
-                        String.format("INSERT INTO %s_Data VALUES(%d,%d,%d,%d,'%s','%s');", nomeRede, numeroDeEntradas, numeroDeSaidas, numeroDeColunas, numeroDeFamilias, nomeFuncaoDeep, nomeFuncaoSaida)
+                        String.format("INSERT INTO %s_Data VALUES(%d,%d,%d,%d,'%s','%s');", nomeRede, numeroDeEntradas, numeroDeSaidas, numeroDeFamilias, numeroDeColunas, nomeFuncaoDeep, nomeFuncaoSaida)
                 );
                 cmd.executeUpdate();
                 novo = true;
