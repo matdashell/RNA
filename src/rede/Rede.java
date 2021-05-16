@@ -70,7 +70,7 @@ public class Rede extends Data{
                 Tools.loadAlphaGen();
                 Tools.variarPesos();
                 contadorE++;
-                if(contadorE > 10){
+                if(contadorE >= 10){
                     getPartida(50,true);
                 }
             }
@@ -80,9 +80,13 @@ public class Rede extends Data{
     public static void getPartida(int testes, boolean refinarRede){
         Tools.getMargemErro();
         taxaAprendizagema = 1.0;
+
         if(margemDeErroAlpha == null) {
             margemDeErroAlpha = margemDeErro*100;
+        }else{
+            margemDeErroAlpha = margemDeErro;
         }
+
         for(int i = 0; i < testes; i++){
 
             if(refinarRede){
@@ -92,7 +96,7 @@ public class Rede extends Data{
                 Tools.gerarPesosAleatorios();
             }
 
-            for(int j = 0; j < 20; j++){
+            for(int j = 0; j < 50; j++){
                 temp0 = margemDeErro;
                 Tools.reduzirMargem();
                 temp1 = margemDeErro;

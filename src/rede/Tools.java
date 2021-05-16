@@ -13,7 +13,7 @@ public class Tools extends Data{
         for(int i = 0; i < pesosEntradas.length; i++){
             for (int j = 0; j < pesosEntradas[i].length; j++) {
                 if(Math.random()>0.4) {
-                    pesosEntradas[i][j] += pesosEntradas[i][j] * 0.03;
+                    pesosEntradas[i][j] += pesosEntradas[i][j] * 0.003;
                 }
             }
         }
@@ -22,7 +22,7 @@ public class Tools extends Data{
             for (int j = 0; j < pesosDeep[i].length; j++) {
                 for (int k = 0; k < pesosDeep[i][j].length; k++) {
                     if(Math.random()>0.4) {
-                        pesosDeep[i][j][k] += pesosDeep[i][j][k] * 0.03;
+                        pesosDeep[i][j][k] += pesosDeep[i][j][k] * 0.003;
                     }
                 }
             }
@@ -31,7 +31,7 @@ public class Tools extends Data{
         for(int i = 0; i < pesosSaida.length; i++){
             for (int j = 0; j < pesosSaida[i].length; j++) {
                 if(Math.random()>0.4) {
-                    pesosSaida[i][j] += pesosSaida[i][j] * 0.03;
+                    pesosSaida[i][j] += pesosSaida[i][j] * 0.003;
                 }
             }
         }
