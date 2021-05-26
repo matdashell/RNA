@@ -26,60 +26,73 @@ public class Rede extends Data{
     }
 
     public static void treinar(){
-        if(margemDeErroAlpha == null){
-            Tools.getMargemErro();
-            margemDeErroAlpha = margemDeErro;
-            Tools.saveAlphaGen();
-        }
-        Tools.loadAlphaGen();
-        Tools.getMargemErro();
-        Tools.saveAlphaGen();
-        taxaAprendizagema = 10.0;
 
-        while(true){
-            stringMargemAnterior = new DecimalFormat("#,##0.000").format(margemDeErro);
-            for(int i = 0; i < 10; i++){
-                temp0 = margemDeErro;
-                Tools.reduzirMargem();
-                temp1 = margemDeErro;
-                if(margemDeErro < margemDeErroAlpha){
-                    Tools.saveAlphaGen();
-                    contadorE = 0;
+        List<Integer> parallel = new ArrayList<>();
+        parallel.add(0);
+
+        parallel.parallelStream().forEach(x -> {
+
+            if(margemDeErroAlpha == null){
+                Tools.getMargemErro();
+                margemDeErroAlpha = margemDeErro;
+                Tools.saveAlphaGen();
+            }
+            Tools.loadAlphaGen();
+            Tools.getMargemErro();
+            Tools.saveAlphaGen();
+            taxaAprendizagema = 10.0;
+
+            while(true){
+                stringMargemAnterior = new DecimalFormat("#,##0.000").format(margemDeErro);
+                for(int i = 0; i < 10; i++){
+                    temp0 = margemDeErro;
+                    Tools.reduzirMargem();
+                    temp1 = margemDeErro;
+                    if(margemDeErro < margemDeErroAlpha){
+                        Tools.saveAlphaGen();
+                        contadorE = 0;
+                    }
+                    if(temp0 == temp1){
+                        break;
+                    }
                 }
-                if(temp0 == temp1){
+
+                stringMargemPosterior = new DecimalFormat("#,##0.000").format(margemDeErro);
+                Tools.getInfo();
+                if(margemDeErroAlpha < margemErro || forcarRetorno){
+                    forcarRetorno = false;
+                    Tools.loadAlphaGen();
                     break;
                 }
-            }
-
-            stringMargemPosterior = new DecimalFormat("#,##0.000").format(margemDeErro);
-            Tools.getInfo();
-            if(margemDeErroAlpha < margemErro || forcarRetorno){
-                forcarRetorno = false;
-                Tools.loadAlphaGen();
-                break;
-            }
-            if(salvar){
-                salvar = false;
-                saveDados(nome);
-            }
-            if(stringMargemAnterior.equals(stringMargemPosterior)) {
-                taxaAprendizagema /= 10;
-            }
-            if(taxaAprendizagema <= 0.000001 || margemDeErro > margemDeErroAlpha * 2.0){
-                taxaAprendizagema = 0.1;
-                Tools.loadAlphaGen();
-                Tools.variarPesos();
-                contadorE++;
-                if(contadorE >= 10){
-                    getPartida(50,true);
+                if(salvar){
+                    salvar = false;
+                    saveDados(nome);
+                }
+                if(stringMargemAnterior.equals(stringMargemPosterior)) {
+                    taxaAprendizagema /= 10;
+                }
+                if(taxaAprendizagema <= 0.000001 || margemDeErro > margemDeErroAlpha * 2.0){
+                    taxaAprendizagema = 0.1;
+                    Tools.loadAlphaGen();
+                    Tools.variarPesos();
+                    contadorE++;
+                    if(contadorE >= 10){
+                        getPartida(100,true);
+                    }
                 }
             }
-        }
+
+        });
     }
 
     public static void getPartida(int testes, boolean refinarRede){
         Tools.getMargemErro();
-        taxaAprendizagema = 1.0;
+        if(refinarRede){
+            taxaAprendizagema = 0.01;
+        }else{
+            taxaAprendizagema = 1.0;
+        }
+
 
         if(margemDeErroAlpha == null) {
             margemDeErroAlpha = margemDeErro*100;

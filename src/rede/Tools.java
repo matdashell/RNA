@@ -444,8 +444,8 @@ public class Tools extends Data{
             case "bit": return aDouble -> {if(aDouble > 0.0){return 1.0;}return 0.0;};
             case "leaky relu": return aDouble -> { if(aDouble >= 0.0){ return aDouble; }return (aDouble * 0.001); };
             case "relu": return aDouble -> { if(aDouble >= 0.0){ return aDouble; }return 0.0; };
-            case "tanh": return aDouble -> ( 2 / (1 + Math.pow(2.7182818284590452353602874, (-2 * aDouble))) -1);
-            case "sigmoide": return aDouble -> (1 / (1 + Math.pow(2.7182818284590452353602874, -aDouble)));
+            case "tanh": return aDouble -> ( 2 / (1 + Math.pow(2.718281828459, (-2 * aDouble))) -1);
+            case "sigmoide": return aDouble -> (1 / (1 + Math.pow(2.718281828459, -aDouble)));
             default : throw new NullPointerException("Função de ativação não encontrada");
         }
     }

@@ -2,10 +2,10 @@ import rede.Rede;
 
 public class teste {
     public static void main(String[] args) {
-        Rede.setDados("nomeRede" ,2,1,3,5,"leaky relu","leaky relu");
+        Rede.setDados("nomeRede" ,2,1,100,100,"leaky relu","leaky relu");
         Rede.init();
 
-        int amostras = 50;
+        int amostras = 10;
         boolean refinar = false;
 
         while(true) {
@@ -17,7 +17,7 @@ public class teste {
                 saidas[i][0] = entradas[i][0] * entradas[i][1];
             }
             Rede.setAlimentacao(entradas, saidas);
-            Rede.getPartida(100, refinar);
+            Rede.getPartida(50, refinar);
             Rede.treinar();
 
             for(int i = 0; i < 100; i++){

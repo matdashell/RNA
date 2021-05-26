@@ -7,7 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
           <root url="jar://$MAVEN_REPOSITORY$/org/jetbrains/annotations/20.1.0/annotations-20.1.0.jar!/" />
@@ -16,10 +16,35 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../DriversJava/mysql-connector-java-8.0.23/mysql-connector-java-8.0.23.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/.idea/drivers/byte-buddy-1.8.15.jar!/" />
+          <root url="jar://$MODULE_DIR$/.idea/drivers/client-combined-3.141.59.jar!/" />
+          <root url="jar://$MODULE_DIR$/.idea/drivers/commons-exec-1.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/.idea/drivers/guava-25.0-jre.jar!/" />
+          <root url="jar://$MODULE_DIR$/.idea/drivers/okhttp-3.11.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/.idea/drivers/okio-1.14.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/.idea/drivers/client-combined-3.141.59-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/.idea/drivers/mysql-connector-java-8.0.23.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

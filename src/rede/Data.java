@@ -38,7 +38,7 @@ public class Data {
     static Vector<Integer> vetorSaidas = new Vector<>();
 
     static double taxaAprendizagema = 0.1;
-    static double margemErro = 0.001;
+    static double margemErro = 0.1;
     static double temp0;
     static double temp1;
     static String stringMargemAnterior;
