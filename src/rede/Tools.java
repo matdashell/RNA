@@ -1,7 +1,6 @@
 package rede;
 
 import javax.swing.*;
-import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Function;
@@ -12,11 +11,11 @@ public class Tools extends Data{
     private static Double numeroMaxSaida = null;
 
     //retropopagação com intuito de reduzir margem de erro da rede para que a mesma aprenda
-    static void reduzirMargem(){
+    static Data reduzirMargem(Data data){
 
-        Tools.getMargemErro();
+        data = Tools.getMargemErro(data);
 
-        double margemPassada = Rede.redes.get(0).margemDeErro;
+        double margemPassada = data.margemDeErro;
         double saveMargem;
 
         /*misturar posições para gerar combinações aleatorias*/
@@ -25,80 +24,80 @@ public class Tools extends Data{
         Collections.shuffle(vetorEntradas);
         Collections.shuffle(vetorSaidas);
 
+        /*calibrar pesos deep*/
+        for(int i = 0; i < numeroDeFamilias-1; i++){
+            for(int j = 0; j < numeroDeColunas; j++){
+                for(int k = 0; k < numeroDeColunas; k++){
+                    saveMargem = data.margemDeErro;
+                    data.pesosDeep[vetorColunas.get(k)][vetorFamilias.get(i)][vetorColunas.get(j)] += taxaAprendizagem;
+                    data = Tools.getMargemErro(data);
+                    if(data.margemDeErro > margemPassada){
+                        data.pesosDeep[vetorColunas.get(k)][vetorFamilias.get(i)][vetorColunas.get(j)] -= 2* taxaAprendizagem;
+                        data = Tools.getMargemErro(data);
+                        if(data.margemDeErro > margemPassada){
+                            data.pesosDeep[vetorColunas.get(k)][vetorFamilias.get(i)][vetorColunas.get(j)] += taxaAprendizagem;
+                            data.margemDeErro = saveMargem;
+                            margemPassada = saveMargem;
+                        }else{
+                            margemPassada = data.margemDeErro;
+                        }
+                    }else{
+                        margemPassada = data.margemDeErro;
+                    }
+                    if(data.pesosDeep[vetorColunas.get(k)][vetorFamilias.get(i)][vetorColunas.get(j)] > numeroMaxDeep){
+                        data.pesosDeep[vetorColunas.get(k)][vetorFamilias.get(i)][vetorColunas.get(j)] = numeroMaxDeep;
+                    }
+                    else if(data.pesosDeep[vetorColunas.get(k)][vetorFamilias.get(i)][vetorColunas.get(j)] < numeroMaxDeep*-1){
+                        data.pesosDeep[vetorColunas.get(k)][vetorFamilias.get(i)][vetorColunas.get(j)] = numeroMaxDeep*-1;
+                    }
+                }
+            }
+        }
+
         /*calibrar bias (deep)*/
-        for(int i = 0; i < Rede.redes.get(0).bias.length-1; i++){
-            saveMargem = Rede.redes.get(0).margemDeErro;
-            Rede.redes.get(0).bias[i] += taxaAprendizagema;
-            Tools.getMargemErro();
-            if(Rede.redes.get(0).margemDeErro > margemPassada){
-                Rede.redes.get(0).bias[i] -= 2*taxaAprendizagema;
-                Tools.getMargemErro();
-                if(Rede.redes.get(0).margemDeErro > margemPassada){
-                    Rede.redes.get(0).bias[i] += taxaAprendizagema;
-                    Rede.redes.get(0).margemDeErro = saveMargem;
+        for(int i = 0; i < data.bias.length-1; i++){
+            saveMargem = data.margemDeErro;
+            data.bias[i] += taxaAprendizagem;
+            data = Tools.getMargemErro(data);
+            if(data.margemDeErro > margemPassada){
+                data.bias[i] -= 2* taxaAprendizagem;
+                data = Tools.getMargemErro(data);
+                if(data.margemDeErro > margemPassada){
+                    data.bias[i] += taxaAprendizagem;
+                    data.margemDeErro = saveMargem;
                     margemPassada = saveMargem;
                 }else{
-                    margemPassada = Rede.redes.get(0).margemDeErro;
+                    margemPassada = data.margemDeErro;
                 }
             }else{
-                margemPassada = Rede.redes.get(0).margemDeErro;
+                margemPassada = data.margemDeErro;
             }
         }
 
         /*calibrar pesos de entrada*/
         for(int i = 0; i < numeroDeEntradas; i++){
             for(int j = 0; j < numeroDeColunas; j++){
-                saveMargem = Rede.redes.get(0).margemDeErro;
-                Rede.redes.get(0).pesosEntradas[vetorEntradas.get(i)][vetorColunas.get(j)] += taxaAprendizagema;
-                Tools.getMargemErro();
-                if(Rede.redes.get(0).margemDeErro > margemPassada){
-                    Rede.redes.get(0).pesosEntradas[vetorEntradas.get(i)][vetorColunas.get(j)] -= 2*taxaAprendizagema;
-                    Tools.getMargemErro();
-                    if(Rede.redes.get(0).margemDeErro > margemPassada){
-                        Rede.redes.get(0).pesosEntradas[vetorEntradas.get(i)][vetorColunas.get(j)] += taxaAprendizagema;
-                        Rede.redes.get(0).margemDeErro = saveMargem;
+                saveMargem = data.margemDeErro;
+                data.pesosEntradas[vetorEntradas.get(i)][vetorColunas.get(j)] += taxaAprendizagem;
+                data = Tools.getMargemErro(data);
+                if(data.margemDeErro > margemPassada){
+                    data.pesosEntradas[vetorEntradas.get(i)][vetorColunas.get(j)] -= 2* taxaAprendizagem;
+                    data = Tools.getMargemErro(data);
+                    if(data.margemDeErro > margemPassada){
+                        data.pesosEntradas[vetorEntradas.get(i)][vetorColunas.get(j)] += taxaAprendizagem;
+                        data.margemDeErro = saveMargem;
                         margemPassada = saveMargem;
                     }else{
-                        margemPassada = Rede.redes.get(0).margemDeErro;
+                        margemPassada = data.margemDeErro;
                     }
                 }else{
-                    margemPassada = Rede.redes.get(0).margemDeErro;
+                    margemPassada = data.margemDeErro;
                 }
-                if(Rede.redes.get(0).pesosEntradas[vetorEntradas.get(i)][vetorColunas.get(j)] > numeroMaxDeep){
-                    Rede.redes.get(0).pesosEntradas[vetorEntradas.get(i)][vetorColunas.get(j)] = numeroMaxDeep;
+                if(data.pesosEntradas[vetorEntradas.get(i)][vetorColunas.get(j)] > numeroMaxDeep){
+                    data.pesosEntradas[vetorEntradas.get(i)][vetorColunas.get(j)] = numeroMaxDeep;
                 }
-                else if(Rede.redes.get(0).pesosEntradas[vetorEntradas.get(i)][vetorColunas.get(j)] < numeroMaxDeep*-1){
-                    Rede.redes.get(0).pesosEntradas[vetorEntradas.get(i)][vetorColunas.get(j)] = numeroMaxDeep*-1;
-                }
-            }
-        }
-
-        /*calibrar pesos deep*/
-        for(int i = 0; i < numeroDeFamilias-1; i++){
-            for(int j = 0; j < numeroDeColunas; j++){
-                for(int k = 0; k < numeroDeColunas; k++){
-                    saveMargem = Rede.redes.get(0).margemDeErro;
-                    Rede.redes.get(0).pesosDeep[vetorColunas.get(k)][vetorFamilias.get(i)][vetorColunas.get(j)] += taxaAprendizagema;
-                    Tools.getMargemErro();
-                    if(Rede.redes.get(0).margemDeErro > margemPassada){
-                        Rede.redes.get(0).pesosDeep[vetorColunas.get(k)][vetorFamilias.get(i)][vetorColunas.get(j)] -= 2*taxaAprendizagema;
-                        Tools.getMargemErro();
-                        if(Rede.redes.get(0).margemDeErro > margemPassada){
-                            Rede.redes.get(0).pesosDeep[vetorColunas.get(k)][vetorFamilias.get(i)][vetorColunas.get(j)] += taxaAprendizagema;
-                            Rede.redes.get(0).margemDeErro = saveMargem;
-                            margemPassada = saveMargem;
-                        }else{
-                            margemPassada = Rede.redes.get(0).margemDeErro;
-                        }
-                    }else{
-                        margemPassada = Rede.redes.get(0).margemDeErro;
-                    }
-                    if(Rede.redes.get(0).pesosDeep[vetorColunas.get(k)][vetorFamilias.get(i)][vetorColunas.get(j)] > numeroMaxDeep){
-                        Rede.redes.get(0).pesosDeep[vetorColunas.get(k)][vetorFamilias.get(i)][vetorColunas.get(j)] = numeroMaxDeep;
-                    }
-                    else if(Rede.redes.get(0).pesosDeep[vetorColunas.get(k)][vetorFamilias.get(i)][vetorColunas.get(j)] < numeroMaxDeep*-1){
-                        Rede.redes.get(0).pesosDeep[vetorColunas.get(k)][vetorFamilias.get(i)][vetorColunas.get(j)] = numeroMaxDeep*-1;
-                    }
+                else if(data.pesosEntradas[vetorEntradas.get(i)][vetorColunas.get(j)] < numeroMaxDeep*-1){
+                    data.pesosEntradas[vetorEntradas.get(i)][vetorColunas.get(j)] = numeroMaxDeep*-1;
                 }
             }
         }
@@ -106,183 +105,200 @@ public class Tools extends Data{
         /*calibrar pesos de saida*/
         for(int i = 0; i < numeroDeSaidas; i++){
             for(int j = 0; j < numeroDeColunas; j++){
-                saveMargem = Rede.redes.get(0).margemDeErro;
-                Rede.redes.get(0).pesosSaida[vetorSaidas.get(i)][vetorColunas.get(j)] += taxaAprendizagema;
-                Tools.getMargemErro();
-                if(Rede.redes.get(0).margemDeErro > margemPassada){
-                    Rede.redes.get(0).pesosSaida[vetorSaidas.get(i)][vetorColunas.get(j)] -= 2*taxaAprendizagema;
-                    Tools.getMargemErro();
-                    if(Rede.redes.get(0).margemDeErro > margemPassada){
-                        Rede.redes.get(0).pesosSaida[vetorSaidas.get(i)][vetorColunas.get(j)] += taxaAprendizagema;
-                        Rede.redes.get(0).margemDeErro = saveMargem;
+                saveMargem = data.margemDeErro;
+                data.pesosSaida[vetorSaidas.get(i)][vetorColunas.get(j)] += taxaAprendizagem;
+                data = Tools.getMargemErro(data);
+                if(data.margemDeErro > margemPassada){
+                    data.pesosSaida[vetorSaidas.get(i)][vetorColunas.get(j)] -= 2* taxaAprendizagem;
+                    data = Tools.getMargemErro(data);
+                    if(data.margemDeErro > margemPassada){
+                        data.pesosSaida[vetorSaidas.get(i)][vetorColunas.get(j)] += taxaAprendizagem;
+                        data.margemDeErro = saveMargem;
                         margemPassada = saveMargem;
                     }else{
-                        margemPassada = Rede.redes.get(0).margemDeErro;
+                        margemPassada = data.margemDeErro;
                     }
                 }else{
-                    margemPassada = Rede.redes.get(0).margemDeErro;
+                    margemPassada = data.margemDeErro;
                 }
-                if(Rede.redes.get(0).pesosSaida[vetorSaidas.get(i)][vetorColunas.get(j)] > numeroMaxSaida){
-                    Rede.redes.get(0).pesosSaida[vetorSaidas.get(i)][vetorColunas.get(j)] = numeroMaxSaida;
+                if(data.pesosSaida[vetorSaidas.get(i)][vetorColunas.get(j)] > numeroMaxSaida){
+                    data.pesosSaida[vetorSaidas.get(i)][vetorColunas.get(j)] = numeroMaxSaida;
                 }
-                else if(Rede.redes.get(0).pesosSaida[vetorSaidas.get(i)][vetorColunas.get(j)] < numeroMaxSaida*-1){
-                    Rede.redes.get(0).pesosSaida[vetorSaidas.get(i)][vetorColunas.get(j)] = numeroMaxSaida*-1;
+                else if(data.pesosSaida[vetorSaidas.get(i)][vetorColunas.get(j)] < numeroMaxSaida*-1){
+                    data.pesosSaida[vetorSaidas.get(i)][vetorColunas.get(j)] = numeroMaxSaida*-1;
                 }
             }
         }
 
         /*calibrar bias (saida)*/
-        for(int i = Rede.redes.get(0).bias.length-1; i < Rede.redes.get(0).bias.length; i++){
-            saveMargem = Rede.redes.get(0).margemDeErro;
-            Rede.redes.get(0).bias[i] += taxaAprendizagema;
-            Tools.getMargemErro();
-            if(Rede.redes.get(0).margemDeErro > margemPassada){
-                Rede.redes.get(0).bias[i] -= 2*taxaAprendizagema;
-                Tools.getMargemErro();
-                if(Rede.redes.get(0).margemDeErro > margemPassada){
-                    Rede.redes.get(0).bias[i] += taxaAprendizagema;
-                    Rede.redes.get(0).margemDeErro = saveMargem;
+        for(int i = data.bias.length-1; i < data.bias.length; i++){
+            saveMargem = data.margemDeErro;
+            data.bias[i] += taxaAprendizagem;
+            data = Tools.getMargemErro(data);
+            if(data.margemDeErro > margemPassada){
+                data.bias[i] -= 2* taxaAprendizagem;
+                data = Tools.getMargemErro(data);
+                if(data.margemDeErro > margemPassada){
+                    data.bias[i] += taxaAprendizagem;
+                    data.margemDeErro = saveMargem;
                     margemPassada = saveMargem;
                 }else{
-                    margemPassada = Rede.redes.get(0).margemDeErro;
+                    margemPassada = data.margemDeErro;
                 }
             }else{
-                margemPassada = Rede.redes.get(0).margemDeErro;
+                margemPassada = data.margemDeErro;
             }
         }
+        return data;
     }
 
     //obter margem de erro atual da rede para levantamento de informações durante o treinamento
-    static void getMargemErro() {
+    static Data getMargemErro(Data data) {
 
-        Rede.redes.get(0).margemDeErro = 0.0;
+        data.margemDeErro = 0.0;
 
         for (int i = 0; i < valoresEntrada.length; i++) {
-            zerarNeuronios();
+
+            data = zerarNeuronios(data);
 
             for (int j = 0; j < numeroDeColunas; j++) {
                 for (int k = 0; k < numeroDeEntradas; k++) {
-                    neuroniosDeep[j][0] += Rede.redes.get(0).pesosEntradas[k][j] * valoresEntrada[i][k];
+                    data.neuroniosDeep[j][0] += data.pesosEntradas[k][j] * valoresEntrada[i][k];
                 }
-                neuroniosDeep[j][0] = funcaoAtivacaoDeep.apply(neuroniosDeep[j][0] + Rede.redes.get(0).bias[0]);
+                data.neuroniosDeep[j][0] = funcaoAtivacaoDeep.apply(data.neuroniosDeep[j][0] + data.bias[0]);
             }
 
             for (int j = 0; j < numeroDeFamilias - 1; j++) {
                 for (int k = 0; k < numeroDeColunas; k++) {
                     for (int l = 0; l < numeroDeColunas; l++) {
-                        neuroniosDeep[k][j + 1] += Rede.redes.get(0).pesosDeep[l][j][k] * neuroniosDeep[l][j];
+                        data.neuroniosDeep[k][j + 1] += data.pesosDeep[l][j][k] * data.neuroniosDeep[l][j];
                     }
-                    neuroniosDeep[k][j + 1] = funcaoAtivacaoDeep.apply(neuroniosDeep[k][j + 1] + Rede.redes.get(0).bias[j + 1]);
+                    data.neuroniosDeep[k][j + 1] = funcaoAtivacaoDeep.apply(data.neuroniosDeep[k][j + 1] + data.bias[j + 1]);
                 }
             }
 
             for (int j = 0; j < numeroDeSaidas; j++) {
                 for (int k = 0; k < numeroDeColunas; k++) {
-                    neuroniosSaida[j] += Rede.redes.get(0).pesosSaida[j][k] * neuroniosDeep[k][numeroDeFamilias - 1];
+                    data.neuroniosSaida[j] += data.pesosSaida[j][k] * data.neuroniosDeep[k][numeroDeFamilias - 1];
                 }
-                neuroniosSaida[j] = funcaoAtivacaoSaida.apply(neuroniosSaida[j] + Rede.redes.get(0).bias[Rede.redes.get(0).bias.length - 1]);
+                data.neuroniosSaida[j] = funcaoAtivacaoSaida.apply(data.neuroniosSaida[j] + data.bias[data.bias.length - 1]);
 
-                double erro = Math.pow(valoresSaida[i][j] - neuroniosSaida[j] , 10);
+                double erro = Math.pow(valoresSaida[i][j] - data.neuroniosSaida[j] , 2);
 
-                Rede.redes.get(0).margemDeErro += erro;
+                data.margemDeErro += erro;
             }
         }
+        return data;
+    }
+
+    //definir tamanho dos vetores
+    public static Data setSize(Data data){
+        data.neuroniosDeep = new Double[Rede.save.neuroniosDeep.length][Rede.save.neuroniosDeep[0].length];
+        data.neuroniosSaida = new Double[Rede.save.neuroniosSaida.length];
+        data.pesosEntradas = new Double[pesosEntradasAlpha.length][pesosEntradasAlpha[0].length];
+        data.pesosDeep = new Double[pesosDeepAlpha.length][pesosDeepAlpha[0].length][pesosDeepAlpha[0][0].length];
+        data.pesosSaida = new Double[pesosSaidaAlpha.length][pesosSaidaAlpha[0].length];
+        data.bias = new Double[biasAlpha.length];
+
+        return data;
     }
 
     //salvar melhor geração da rede para que se possa dar continuidade ao treinamento usando 'herdeiros' da mesma
-    public static void saveAlphaGen(){
-        for(int i = 0; i < Rede.redes.get(0).pesosEntradas.length; i++){
-            for(int j = 0; j < Rede.redes.get(0).pesosEntradas[i].length; j++){
-                pesosEntradasAlpha[i][j] = Rede.redes.get(0).pesosEntradas[i][j];
+    public static void saveAlphaGen(Data data){
+        for(int i = 0; i < data.pesosEntradas.length; i++){
+            for(int j = 0; j < data.pesosEntradas[i].length; j++){
+                pesosEntradasAlpha[i][j] = data.pesosEntradas[i][j];
             }
         }
-        for(int i = 0; i < Rede.redes.get(0).pesosDeep.length; i++){
-            for(int j = 0; j < Rede.redes.get(0).pesosDeep[i].length; j++){
-                for(int k = 0; k < Rede.redes.get(0).pesosDeep[i][j].length; k++){
-                    pesosDeepAlpha[i][j][k] = Rede.redes.get(0).pesosDeep[i][j][k];
+        for(int i = 0; i < data.pesosDeep.length; i++){
+            for(int j = 0; j < data.pesosDeep[i].length; j++){
+                for(int k = 0; k < data.pesosDeep[i][j].length; k++){
+                    pesosDeepAlpha[i][j][k] = data.pesosDeep[i][j][k];
                 }
             }
         }
-        for(int i = 0; i < Rede.redes.get(0).pesosSaida.length; i++){
-            for(int j = 0; j < Rede.redes.get(0).pesosSaida[i].length; j++){
-                pesosSaidaAlpha[i][j] = Rede.redes.get(0).pesosSaida[i][j];
+        for(int i = 0; i < data.pesosSaida.length; i++){
+            for(int j = 0; j < data.pesosSaida[i].length; j++){
+                pesosSaidaAlpha[i][j] = data.pesosSaida[i][j];
             }
         }
-        for(int i = 0; i < Rede.redes.get(0).bias.length; i++){
-            biasAlpha[i] = Rede.redes.get(0).bias[i];
+        for(int i = 0; i < data.bias.length; i++){
+            biasAlpha[i] = data.bias[i];
         }
-        margemDeErroAlpha = Rede.redes.get(0).margemDeErro;
-    }
-
-    //carregar save contendo local de partida atual de treinamento
-    static void loadSaveGen(){
-        for(int i = 0; i < pesosEntradasAlpha.length; i++){
-            for(int j = 0; j < pesosEntradasAlpha[i].length; j++){
-                Rede.redes.get(0).pesosEntradas[i][j] = Rede.redes.get(1).pesosEntradas[i][j];
-            }
-        }
-        for(int i = 0; i < pesosDeepAlpha.length; i++){
-            for(int j = 0; j < pesosDeepAlpha[i].length; j++){
-                for(int k = 0; k < pesosDeepAlpha[i][j].length; k++){
-                    Rede.redes.get(0).pesosDeep[i][j][k] = Rede.redes.get(1).pesosDeep[i][j][k];
-                }
-            }
-        }
-        for(int i = 0; i < pesosSaidaAlpha.length; i++){
-            for(int j = 0; j < pesosSaidaAlpha[i].length; j++){
-                Rede.redes.get(0).pesosSaida[i][j] = Rede.redes.get(1).pesosSaida[i][j];
-            }
-        }
-        for(int i = 0; i < biasAlpha.length; i++){
-            Rede.redes.get(0).bias[i] = Rede.redes.get(1).bias[i];
-        }
-        Rede.redes.get(0).margemDeErro = Rede.redes.get(1).margemDeErro;
+        margemDeErroAlpha = data.margemDeErro;
     }
 
     //carregar geração alpha juntamente com save para atualização de treinamento
-    static void loadAlphaGen(){
+    static Data loadAlphaGen(Data data){
         for(int i = 0; i < pesosEntradasAlpha.length; i++){
             for(int j = 0; j < pesosEntradasAlpha[i].length; j++){
-                Rede.redes.get(1).pesosEntradas[i][j] = pesosEntradasAlpha[i][j];
+                data.pesosEntradas[i][j] = pesosEntradasAlpha[i][j];
             }
         }
         for(int i = 0; i < pesosDeepAlpha.length; i++){
             for(int j = 0; j < pesosDeepAlpha[i].length; j++){
                 for(int k = 0; k < pesosDeepAlpha[i][j].length; k++){
-                    Rede.redes.get(1).pesosDeep[i][j][k] = pesosDeepAlpha[i][j][k];
+                    data.pesosDeep[i][j][k] = pesosDeepAlpha[i][j][k];
                 }
             }
         }
         for(int i = 0; i < pesosSaidaAlpha.length; i++){
             for(int j = 0; j < pesosSaidaAlpha[i].length; j++){
-                Rede.redes.get(1).pesosSaida[i][j] = pesosSaidaAlpha[i][j];
+                data.pesosSaida[i][j] = pesosSaidaAlpha[i][j];
             }
         }
         for(int i = 0; i < biasAlpha.length; i++){
-            Rede.redes.get(1).bias[i] = biasAlpha[i];
+            data.bias[i] = biasAlpha[i];
         }
-        Rede.redes.get(1).margemDeErro = margemDeErroAlpha;
+        data.margemDeErro = margemDeErroAlpha;
 
-        Tools.loadSaveGen();
+        return data;
+    }
+
+    //carregar geração save
+    static Data loadSaveGen(Data data){
+        for(int i = 0; i < pesosEntradasAlpha.length; i++){
+            for(int j = 0; j < pesosEntradasAlpha[i].length; j++){
+                data.pesosEntradas[i][j] = Rede.save.pesosEntradas[i][j];
+            }
+        }
+        for(int i = 0; i < pesosDeepAlpha.length; i++){
+            for(int j = 0; j < pesosDeepAlpha[i].length; j++){
+                for(int k = 0; k < pesosDeepAlpha[i][j].length; k++){
+                    data.pesosDeep[i][j][k] = Rede.save.pesosDeep[i][j][k];
+                }
+            }
+        }
+        for(int i = 0; i < pesosSaidaAlpha.length; i++){
+            for(int j = 0; j < pesosSaidaAlpha[i].length; j++){
+                data.pesosSaida[i][j] = Rede.save.pesosSaida[i][j];
+            }
+        }
+        for(int i = 0; i < biasAlpha.length; i++){
+            data.bias[i] = Rede.save.bias[i];
+        }
+        data.margemDeErro = Rede.save.margemDeErro;
+
+        return data;
     }
 
     //gerar pesos aleatorios usado durante a fase inicial de treinamento para estipular melhor configuração incial
     static void gerarPesosAleatorios(){
 
-        for(int i = 0; i < Rede.redes.get(0).pesosEntradas.length; i++){
-            for (int j = 0; j < Rede.redes.get(0).pesosEntradas[i].length; j++) {
+        for(int i = 0; i < pesosEntradasAlpha.length; i++){
+            for (int j = 0; j < pesosEntradasAlpha[i].length; j++) {
                 pesosEntradasAlpha[i][j] = (Math.random() * (numeroMaxDeep * 2)) - numeroMaxDeep;
             }
         }
-        for(int i = 0; i < Rede.redes.get(0).pesosDeep.length; i++){
-            for (int j = 0; j < Rede.redes.get(0).pesosDeep[i].length; j++) {
-                for (int k = 0; k < Rede.redes.get(0).pesosDeep[i][j].length; k++) {
+        for(int i = 0; i < pesosDeepAlpha.length; i++){
+            for (int j = 0; j < pesosDeepAlpha[i].length; j++) {
+                for (int k = 0; k < pesosDeepAlpha[i][j].length; k++) {
                     pesosDeepAlpha[i][j][k] =  (Math.random() * (numeroMaxDeep * 2)) - numeroMaxDeep;
                 }
             }
         }
-        for(int i = 0; i < Rede.redes.get(0).pesosSaida.length; i++){
-            for (int j = 0; j < Rede.redes.get(0).pesosSaida[i].length; j++) {
+        for(int i = 0; i < pesosSaidaAlpha.length; i++){
+            for (int j = 0; j < pesosSaidaAlpha[i].length; j++) {
                 pesosSaidaAlpha[i][j] =  (Math.random() * (numeroMaxSaida * 2)) - numeroMaxSaida;
             }
         }
@@ -290,11 +306,14 @@ public class Tools extends Data{
     }
 
     //zerar vetores responsavel por armazenar a somatoria dos dados
-    static void zerarNeuronios(){
-        for (Double[] doubles : neuroniosDeep) {
+    static Data zerarNeuronios(Data data){
+
+        for (Double[] doubles : data.neuroniosDeep) {
             Arrays.fill(doubles, 0.0);
         }
-        Arrays.fill(neuroniosSaida, 0.0);
+        Arrays.fill(data.neuroniosSaida, 0.0);
+
+        return data;
     }
 
     //vetores com o respectivo tamanho da rede para que durante o teinamento seja possível treinar de formas diferentes
@@ -366,9 +385,9 @@ public class Tools extends Data{
             frame.validate();
 
         }else{
-            info00.setText(String.valueOf(Rede.redes.get(0).margemDeErro));
+//            info00.setText(String.valueOf(Rede.redes.get(0).margemDeErro));
             info01.setText(String.valueOf(margemDeErroAlpha));
-            info02.setText(String.valueOf(taxaAprendizagema));
+            info02.setText(String.valueOf(taxaAprendizagem));
         }
     }
 

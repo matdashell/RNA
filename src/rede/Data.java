@@ -14,8 +14,8 @@ public class Data {
     Double[/*x*/][/*y*/][/*pesos*/] pesosDeep = null;
     Double[/*x*/][/*pesos*/]        pesosSaida = null;
     Double[/*pesos*/]               bias = null;
-    static Double[/*x*/][/*y*/]            neuroniosDeep = null;
-    static Double[/*x*/]                   neuroniosSaida = null;
+    Double[/*x*/][/*y*/]            neuroniosDeep = null;
+    Double[/*x*/]                   neuroniosSaida = null;
     static Function<Double, Double>        funcaoAtivacaoDeep = null;
     static Function<Double, Double>        funcaoAtivacaoSaida = null;
     Double                          margemDeErro = null;
@@ -37,12 +37,7 @@ public class Data {
     static Vector<Integer> vetorEntradas = new Vector<>();
     static Vector<Integer> vetorSaidas = new Vector<>();
 
-    static double taxaAprendizagema = 0.1;
-    static double margemErro = 0.1;
-    static double temp0;
-    static double temp1;
-    static String stringMargemAnterior;
-    static String stringMargemPosterior;
+    static double taxaAprendizagem = 0.1;
 
     static JFrame frame = null;
     static JButton info00 = new JButton("-");
@@ -52,7 +47,4 @@ public class Data {
 
     static boolean forcarRetorno = false;
     static boolean salvar = false;
-
-    static Connection mysql = null;
-
 }

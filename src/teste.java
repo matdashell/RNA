@@ -3,7 +3,7 @@ import rede.Rede;
 public class teste {
     public static void main(String[] args) {
 
-        Rede.setDados("teste", 2, 1, 10, 6, "leaky relu", "leaky relu");
+        Rede.setDados("teste", 2, 1, 5, 3, "leaky relu", "leaky relu");
         Rede.init();
 
         Double[][] entrada = new Double[100][2];
@@ -16,6 +16,6 @@ public class teste {
         }
 
         Rede.setAlimentacao(entrada, saida);
-        Rede.treinar(5, 20);
+        Rede.treinar(50, 50);
     }
 }
