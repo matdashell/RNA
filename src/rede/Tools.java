@@ -11,6 +11,7 @@ public class Tools extends Data{
     private static Double numeroMaxDeep = null;
     private static Double numeroMaxSaida = null;
 
+    //retropopagação com intuito de reduzir margem de erro da rede para que a mesma aprenda
     static void reduzirMargem(){
 
         Tools.getMargemErro();
@@ -151,6 +152,7 @@ public class Tools extends Data{
         }
     }
 
+    //obter margem de erro atual da rede para levantamento de informações durante o treinamento
     static void getMargemErro() {
 
         Rede.redes.get(0).margemDeErro = 0.0;
@@ -180,14 +182,15 @@ public class Tools extends Data{
                 }
                 neuroniosSaida[j] = funcaoAtivacaoSaida.apply(neuroniosSaida[j] + Rede.redes.get(0).bias[Rede.redes.get(0).bias.length - 1]);
 
-                double erro = Math.pow(valoresSaida[i][j] - neuroniosSaida[j] , 4);
+                double erro = Math.pow(valoresSaida[i][j] - neuroniosSaida[j] , 10);
 
                 Rede.redes.get(0).margemDeErro += erro;
             }
         }
     }
 
-    protected static void saveAlphaGen(){
+    //salvar melhor geração da rede para que se possa dar continuidade ao treinamento usando 'herdeiros' da mesma
+    public static void saveAlphaGen(){
         for(int i = 0; i < Rede.redes.get(0).pesosEntradas.length; i++){
             for(int j = 0; j < Rede.redes.get(0).pesosEntradas[i].length; j++){
                 pesosEntradasAlpha[i][j] = Rede.redes.get(0).pesosEntradas[i][j];
@@ -211,6 +214,7 @@ public class Tools extends Data{
         margemDeErroAlpha = Rede.redes.get(0).margemDeErro;
     }
 
+    //carregar save contendo local de partida atual de treinamento
     static void loadSaveGen(){
         for(int i = 0; i < pesosEntradasAlpha.length; i++){
             for(int j = 0; j < pesosEntradasAlpha[i].length; j++){
@@ -235,6 +239,7 @@ public class Tools extends Data{
         Rede.redes.get(0).margemDeErro = Rede.redes.get(1).margemDeErro;
     }
 
+    //carregar geração alpha juntamente com save para atualização de treinamento
     static void loadAlphaGen(){
         for(int i = 0; i < pesosEntradasAlpha.length; i++){
             for(int j = 0; j < pesosEntradasAlpha[i].length; j++){
@@ -261,30 +266,30 @@ public class Tools extends Data{
         Tools.loadSaveGen();
     }
 
+    //gerar pesos aleatorios usado durante a fase inicial de treinamento para estipular melhor configuração incial
     static void gerarPesosAleatorios(){
-
-        verificarValoresMax();
 
         for(int i = 0; i < Rede.redes.get(0).pesosEntradas.length; i++){
             for (int j = 0; j < Rede.redes.get(0).pesosEntradas[i].length; j++) {
-                pesosEntradasAlpha[i][j] = Math.random() * numeroMaxDeep - numeroMaxDeep/2;
+                pesosEntradasAlpha[i][j] = (Math.random() * (numeroMaxDeep * 2)) - numeroMaxDeep;
             }
         }
         for(int i = 0; i < Rede.redes.get(0).pesosDeep.length; i++){
             for (int j = 0; j < Rede.redes.get(0).pesosDeep[i].length; j++) {
                 for (int k = 0; k < Rede.redes.get(0).pesosDeep[i][j].length; k++) {
-                    pesosDeepAlpha[i][j][k] = Math.random() * numeroMaxDeep - numeroMaxDeep/2;
+                    pesosDeepAlpha[i][j][k] =  (Math.random() * (numeroMaxDeep * 2)) - numeroMaxDeep;
                 }
             }
         }
         for(int i = 0; i < Rede.redes.get(0).pesosSaida.length; i++){
             for (int j = 0; j < Rede.redes.get(0).pesosSaida[i].length; j++) {
-                pesosSaidaAlpha[i][j] = Math.random() * numeroMaxSaida - numeroMaxSaida/2;
+                pesosSaidaAlpha[i][j] =  (Math.random() * (numeroMaxSaida * 2)) - numeroMaxSaida;
             }
         }
         Arrays.fill(biasAlpha, 0.0);
     }
 
+    //zerar vetores responsavel por armazenar a somatoria dos dados
     static void zerarNeuronios(){
         for (Double[] doubles : neuroniosDeep) {
             Arrays.fill(doubles, 0.0);
@@ -292,7 +297,11 @@ public class Tools extends Data{
         Arrays.fill(neuroniosSaida, 0.0);
     }
 
+    //vetores com o respectivo tamanho da rede para que durante o teinamento seja possível treinar de formas diferentes
     protected static void iniciarVetores(){
+
+        verificarValoresMax();
+
         for(int i = 0; i < numeroDeColunas; i++){
             vetorColunas.add(i);
         }
@@ -307,6 +316,7 @@ public class Tools extends Data{
         }
     }
 
+    //informações gráficas durente treinamento
     static void getInfo(){
         if(frame == null){
             frame = new JFrame("Informativo");
@@ -356,14 +366,14 @@ public class Tools extends Data{
             frame.validate();
 
         }else{
-            info00.setText(new DecimalFormat("#,##0.000").format(margemDeErro));
-            info01.setText(new DecimalFormat("#,##0.000").format(margemDeErroAlpha));
+            info00.setText(String.valueOf(Rede.redes.get(0).margemDeErro));
+            info01.setText(String.valueOf(margemDeErroAlpha));
             info02.setText(String.valueOf(taxaAprendizagema));
         }
     }
 
+    //obter função de ativação de acordo com a função escolhida para a rede
      static Function<Double, Double> getFuncao(String nomeFuncaoDeep){
-        /*metodo para as funções dos neuronios*/
         switch (nomeFuncaoDeep){
             case "none": return aDouble -> aDouble;
             case "bit": return aDouble -> {if(aDouble > 0.0){return 1.0;}return 0.0;};
@@ -375,6 +385,7 @@ public class Tools extends Data{
         }
     }
 
+    //verificação dos valores máx de ativação para aumentar eficiencia da geração de pesos aleatorios e controle de treinamento
     static void verificarValoresMax(){
 
         if(numeroMaxDeep == null || numeroMaxSaida == null){

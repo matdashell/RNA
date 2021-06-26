@@ -2,30 +2,20 @@ import rede.Rede;
 
 public class teste {
     public static void main(String[] args) {
-        Rede.setDados("nomeRede" ,2,1,100,100,"leaky relu","leaky relu");
+
+        Rede.setDados("teste", 2, 1, 10, 6, "leaky relu", "leaky relu");
         Rede.init();
 
-        int amostras = 10;
-        boolean refinar = false;
+        Double[][] entrada = new Double[100][2];
+        Double[][] saida = new Double[100][1];
 
-        while(true) {
-            Double[][] entradas = new Double[amostras][2];
-            Double[][] saidas = new Double[amostras][1];
-            for (int i = 0; i < amostras; i++) {
-                entradas[i][0] = Math.random() * 10;
-                entradas[i][1] = Math.random() * 10;
-                saidas[i][0] = entradas[i][0] * entradas[i][1];
-            }
-            Rede.setAlimentacao(entradas, saidas);
-            Rede.getPartida(50, refinar);
-            Rede.treinar();
-
-            for(int i = 0; i < 100; i++){
-                double primeiro = Math.round(Math.random() * 10);
-                double segundo = Math.round(Math.random() * 10);
-                System.out.printf("\n %f | %f = %f ",primeiro, segundo, Rede.getProcessamento(new Double[]{primeiro,segundo})[0]);
-            }
-            refinar = true;
+        for(int i = 0; i < 100; i++){
+            entrada[i][0] = Math.random()*10;
+            entrada[i][1] = Math.random()*10;
+            saida[i][0] = entrada[i][0] * entrada[i][1];
         }
+
+        Rede.setAlimentacao(entrada, saida);
+        Rede.treinar(5, 20);
     }
 }

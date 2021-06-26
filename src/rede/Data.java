@@ -55,5 +55,4 @@ public class Data {
 
     static Connection mysql = null;
 
-    static int contadorE = 0;
 }

@@ -46,28 +46,28 @@ public class MySQL extends Rede{
                 valores.add(rs.getDouble("valor"));
             }
 
-            for(int i = 0; i < pesosEntradas.length; i++){
-                for(int j = 0; j < pesosEntradas[i].length; j++){
-                    pesosEntradas[i][j] = valores.get(contadorId);
+            for(int i = 0; i < pesosEntradasAlpha.length; i++){
+                for(int j = 0; j < pesosEntradasAlpha[i].length; j++){
+                    pesosEntradasAlpha[i][j] = valores.get(contadorId);
                     contadorId ++;
                 }
             }
-            for(int i = 0; i < pesosDeep.length; i++){
-                for(int j = 0; j < pesosDeep[i].length; j++){
-                    for(int k = 0; k < pesosDeep[i][j].length; k++){
-                        pesosDeep[i][j][k] = valores.get(contadorId);
+            for(int i = 0; i < pesosDeepAlpha.length; i++){
+                for(int j = 0; j < pesosDeepAlpha[i].length; j++){
+                    for(int k = 0; k < pesosDeepAlpha[i][j].length; k++){
+                        pesosDeepAlpha[i][j][k] = valores.get(contadorId);
                         contadorId ++;
                     }
                 }
             }
-            for(int i = 0; i < pesosSaida.length; i++){
-                for(int j = 0; j < pesosSaida[i].length; j++){
-                    pesosSaida[i][j] = valores.get(contadorId);
+            for(int i = 0; i < pesosSaidaAlpha.length; i++){
+                for(int j = 0; j < pesosSaidaAlpha[i].length; j++){
+                    pesosSaidaAlpha[i][j] = valores.get(contadorId);
                     contadorId ++;
                 }
             }
-            for(int i = 0; i < bias.length; i++){
-                bias[i] = valores.get(contadorId);
+            for(int i = 0; i < biasAlpha.length; i++){
+                biasAlpha[i] = valores.get(contadorId);
                 contadorId ++;
             }
 
